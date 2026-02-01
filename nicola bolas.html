@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chroniques de Nicol Bolas - Artefact Interactif</title>
+    <style>
+        :root {
+            --grixis-blue: #0e6eb8;
+            --grixis-black: #1a1718;
+            --grixis-red: #d3202a;
+            --gold: #f1c40f;
+            --text: #e0e0e0;
+        }
+
+        body {
+            background-color: #0d0d0d;
+            color: var(--text);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 900px;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 20px;
+            background: var(--grixis-black);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #333;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+        }
+
+        /* Panneau Gauche : Statut */
+        .status-panel {
+            border-right: 1px solid #333;
+            padding-right: 20px;
+        }
+
+        .power-bar {
+            height: 25px;
+            background: #000;
+            border-radius: 12px;
+            border: 1px solid var(--grixis-blue);
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        #fill {
+            height: 100%;
+            width: 10%;
+            background: linear-gradient(90deg, var(--grixis-blue), var(--grixis-red));
+            transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #222;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn:hover { background: var(--grixis-red); border-color: white; }
+        .btn-blue:hover { background: var(--grixis-blue); }
+
+        /* Panneau Droit : Histoire */
+        .history-panel {
+            max-height: 600px;
+            overflow-y: auto;
+            padding-left: 10px;
+        }
+
+        .era {
+            background: #222;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--grixis-blue);
+            border-radius: 0 8px 8px 0;
+            opacity: 0.5;
+            transition: 0.5s;
+        }
+
+        .era.active { opacity: 1; border-left-color: var(--gold); background: #2a2a2a; }
+
+        h2 { color: var(--gold); margin-top: 0; }
+        h3 { color: var(--grixis-blue); margin-bottom: 5px; }
+        .date { font-size: 0.8em; color: #888; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="status-panel">
+        <h2>STATUT</h2>
+        <p id="rank">Dragon Ancestral (Mortel)</p>
+        <div class="power-bar"><div id="fill"></div></div>
+        <p>Puissance : <span id="percent">10</span>%</p>
+        
+        <hr style="border: 0; border-top: 1px solid #333;">
+        
+        <h3>ACTIONS</h3>
+        <button class="btn btn-blue" onclick="advance(25)">Absorber une Étincelle</button>
+        <button class="btn" onclick="advance(100)">Lancer le Sort du Maître</button>
+        <button class="btn" style="color: grey;" onclick="reset()">Subir la Fracture</button>
+    </div>
+
+    <div class="history-panel" id="history">
+        <div class="era active" id="era-1">
+            <span class="date">-25 000 ans AR</span>
+            <h3>1. Les Origines</h3>
+            <p>Né de l'Arbre de la Création sur Dominaria. Survit à la Guerre des Dragons et s'éveille en tant qu'Arpenteur divin.</p>
+        </div>
+        <div class="era" id="era-2">
+            <span class="date">4500 AR</span>
+            <h3>2. La Fracture (The Mending)</h3>
+            <p>Le Multivers se répare. Bolas perd son omnipotence. Il devient mortel et son obsession pour le pouvoir commence.</p>
+        </div>
+        <div class="era" id="era-3">
+            <span class="date">Ère Moderne</span>
+            <h3>3. Amonkhet & Ixalan</h3>
+            <p>Bolas crée une armée de zombies éternels et s'empare du Soleil d'Interdiction pour piéger ses ennemis.</p>
+        </div>
+        <div class="era" id="era-4">
+            <span class="date">La Guerre de l'Étincelle</span>
+            <h3>4. L'Ascension finale</h3>
+            <p>Sur Ravnica, il moissonne les étincelles. Il est à un pas de redevenir un Dieu avant d'être trahi.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    let pwr = 10;
+    
+    function advance(val) {
+        pwr = Math.min(pwr + val, 100);
+        updateUI();
+    }
+
+    function reset() {
+        pwr = 5;
+        updateUI();
+    }
+
+    function updateUI() {
+        document.getElementById('fill').style.width = pwr + '%';
+        document.getElementById('percent').innerText = pwr;
+        
+        const rank = document.getElementById('rank');
+        const eras = document.querySelectorAll('.era');
+        
+        eras.forEach(e => e.classList.remove('active'));
+
+        if(pwr < 30) {
+            rank.innerText = "Dragon Ancestral (Mortel)";
+            document.getElementById('era-1').classList.add('active');
+        } else if (pwr < 60) {
+            rank.innerText = "Arpenteur Déchu";
+            document.getElementById('era-2').classList.add('active');
+        } else if (pwr < 99) {
+            rank.innerText = "Maître de l'Armée Éternelle";
+            document.getElementById('era-3').classList.add('active');
+        } else {
+            rank.innerText = "DRAGON-DIEU OMNIPOTENT";
+            document.getElementById('era-4').classList.add('active');
+            rank.style.color = "var(--gold)";
+        }
+    }
+</script>
+
+</body>
+</html>
